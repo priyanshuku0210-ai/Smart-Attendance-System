@@ -412,3 +412,66 @@ tr:nth-child(even) {
         font-size: 20px;
     }
 }
+/*small screen improvements */
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 16px;
+        margin: 18px auto;
+    }
+
+    .navbar {
+        padding: 12px 14px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-right {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .nav-right a {
+        margin-left: 0;
+        font-size: 14px;
+    }
+
+    .attendance-title h2 {
+        font-size: 24px;
+    }
+
+    .attendance-title p {
+        font-size: 14px;
+    }
+
+    .camera-panel {
+        padding: 12px;
+    }
+
+    .camera-panel img {
+        height: 220px;
+    }
+
+    .action-box,
+    .info-box {
+        padding: 16px;
+    }
+
+    .action-cell {
+        min-width: 0;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    button,
+    .btn-small {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
