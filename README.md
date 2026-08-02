@@ -1,5 +1,15 @@
 # 📸 Smart Attendance System
 
+## 🚀 Live Demo
+
+🔗 **[Try Smart Attendance System](https://smart-attendance-system-09qn.onrender.com)**
+
+### Demo Login
+- **Username:** demo
+- **Password:** Demo@2026
+
+> This is a portfolio demonstration. Camera-based face recognition requires local webcam access and is not available in the hosted demo.
+
 A modern **Face Recognition-Based Smart Attendance System** built with **Python, Flask, OpenCV, and SQLite**.
 
 The system allows an administrator to manage students, capture and train facial data, recognize students through a webcam, and automatically record their attendance in real time.
