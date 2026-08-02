@@ -75,6 +75,16 @@ def init_db():
             "INSERT INTO admin (username, password) VALUES (?, ?)",
             ("admin", "admin123")
         )
+       demo = cur.execute(
+    "SELECT * FROM admin WHERE username = ?",
+    ("demo",)
+).fetchone()
+
+if not demo:
+    cur.execute(
+        "INSERT INTO admin (username, password) VALUES (?, ?)",
+        ("demo", "Demo@2026")
+    )
 
     conn.commit()
     conn.close()
