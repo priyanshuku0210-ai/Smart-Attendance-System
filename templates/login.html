@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Smart Attendance</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(124, 58, 237, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(6, 182, 212, 0.20),
+                    transparent 30%
+                ),
+                #080b18;
+
+            position: relative;
+            padding: 20px;
+        }
+
+        /* =========================
+           ANIMATED BACKGROUND
+        ========================== */
+
+        .background {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.65;
+        }
+
+        .orb-1 {
+            width: 280px;
+            height: 280px;
+            background: #7c3aed;
+            top: -100px;
+            left: -80px;
+            animation: floatOne 9s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 220px;
+            height: 220px;
+            background: #06b6d4;
+            bottom: -80px;
+            right: -60px;
+            animation: floatTwo 10s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            width: 140px;
+            height: 140px;
+            background: #a855f7;
+            top: 45%;
+            left: 8%;
+            opacity: 0.35;
+            animation: floatThree 7s ease-in-out infinite;
+        }
+
+        .orb-4 {
+            width: 100px;
+            height: 100px;
+            background: #22d3ee;
+            top: 15%;
+            right: 12%;
+            opacity: 0.30;
+            animation: floatThree 8s ease-in-out infinite reverse;
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.035) 1px,
+                    transparent 1px
+                );
+
+            background-size: 55px 55px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                transparent,
+                black 20%,
+                black 80%,
+                transparent
+            );
+
+            animation: gridMove 20s linear infinite;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #67e8f9;
+
+            box-shadow:
+                0 0 10px #22d3ee,
+                0 0 20px rgba(34,211,238,0.5);
+
+            opacity: 0.6;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 12%;
+            bottom: -10px;
+            animation-duration: 12s;
+        }
+
+        .particle:nth-child(2) {
+            left: 28%;
+            bottom: -10px;
+            animation-duration: 16s;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            left: 45%;
+            bottom: -10px;
+            animation-duration: 14s;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(4) {
+            left: 65%;
+            bottom: -10px;
+            animation-duration: 18s;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(5) {
+            left: 82%;
+            bottom: -10px;
+            animation-duration: 13s;
+            animation-delay: 3s;
+        }
+
+        /* =========================
+           LOGIN
+        ========================== */
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 430px;
+            position: relative;
+            z-index: 5;
+            animation: cardEnter 0.8s ease;
+        }
+
+        .login-card {
+            position: relative;
+
+            background: rgba(15, 23, 42, 0.82);
+
+            border: 1px solid rgba(255,255,255,0.10);
+
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+
+            padding: 44px 40px;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.45),
+                0 0 50px rgba(124,58,237,0.08);
+
+            overflow: hidden;
+        }
+
+        /* =========================
+           LOGIN MESSAGE
+        ========================== */
+
+        .login-message {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+            animation: messageAppear 0.3s ease;
+        }
+
+        .login-message.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        .login-message.success {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #86efac;
+        }
+
+        /* Card top glow */
+
+        .login-card::before {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+
+            height: 2px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #a855f7,
+                #22d3ee,
+                transparent
+            );
+
+            animation: glowLine 3s ease-in-out infinite;
+        }
+
+        /* Logo */
+
+        .logo {
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #7c3aed,
+                #06b6d4
+            );
+
+            color: white;
+
+            border-radius: 20px;
+
+            font-size: 27px;
+            font-weight: 800;
+
+            letter-spacing: -1px;
+
+            box-shadow:
+                0 12px 30px rgba(124,58,237,0.35),
+                0 0 25px rgba(6,182,212,0.15);
+
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .heading h1 {
+            color: #f8fafc;
+            font-size: 28px;
+            margin-bottom: 9px;
+            letter-spacing: -0.5px;
+        }
+
+        .heading p {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        /* Form */
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #64748b;
+            transition: 0.25s;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+
+            padding: 14px 15px 14px 45px;
+
+            background: rgba(255,255,255,0.045);
+
+            border: 1px solid rgba(148,163,184,0.22);
+
+            border-radius: 11px;
+
+            font-size: 14px;
+            color: #f8fafc;
+
+            outline: none;
+
+            transition: all 0.25s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #8b5cf6;
+
+            background: rgba(255,255,255,0.07);
+
+            box-shadow:
+                0 0 0 4px rgba(139,92,246,0.12),
+                0 0 20px rgba(139,92,246,0.08);
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: #a78bfa;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #64748b;
+        }
+
+        /* Login button */
+
+        .login-btn {
+            width: 100%;
+
+            margin-top: 8px;
+
+            padding: 14px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: linear-gradient(
+                135deg,
+                #7c3aed,
+                #2563eb,
+                #0891b2
+            );
+
+            background-size: 200% 200%;
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s,
+                box-shadow 0.25s;
+
+            box-shadow:
+                0 10px 25px rgba(124,58,237,0.25);
+
+            animation: buttonGradient 5s ease infinite;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 15px 35px rgba(124,58,237,0.35),
+                0 0 25px rgba(6,182,212,0.12);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Security */
+
+        .security {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            margin-top: 20px;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .security-icon {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 8px rgba(34,197,94,0.7);
+
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .footer {
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #475569;
+
+            font-size: 11px;
+
+            letter-spacing: 0.3px;
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================== */
+
+        @keyframes floatOne {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(80px, 50px) scale(1.15);
+            }
+        }
+
+        @keyframes floatTwo {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-70px, -50px) scale(1.12);
+            }
+        }
+
+        @keyframes floatThree {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-45px);
+            }
+        }
+
+        @keyframes gridMove {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(55px);
+            }
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-110vh);
+                opacity: 0;
+            }
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes glowLine {
+            0%, 100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes buttonGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes statusPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 36px 25px;
+                border-radius: 20px;
+            }
+
+            .heading h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 62px;
+                height: 62px;
+                font-size: 24px;
+            }
+
+            .orb-1 {
+                width: 180px;
+                height: 180px;
+            }
+
+            .orb-2 {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Animated Background -->
+
+    <div class="background">
+
+        <div class="grid"></div>
+
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+    </div>
+
+
+    <!-- Login -->
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <div class="logo">
+                SA
+            </div>
+
+            <div class="heading">
+
+                <h1>Smart Attendance</h1>
+
+                <p>
+                    Sign in to access your attendance dashboard
+                </p>
+
+            </div>
+    {% if message %}
+      <div
+         id="login-message"
+         class="login-message {% if login_success %}success{% else %}error{% endif %}"
+     >
+        {{ message }}
+     </div>
+    {% endif %}
+
+
+            <!-- LOGIN MESSAGE -->
+
+            {% if message %}
+
+            <div
+                id="login-message"
+                class="login-message {% if login_success %}success{% else %}error{% endif %}"
+            >
+                {{ message }}
+            </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+                <div class="form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">👤</span>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            required
+                            autocomplete="username"
+                            value="{{ request.form.get('username', '') }}"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">🔒</span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-btn"
+                >
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <div class="security">
+
+                <span class="security-icon"></span>
+
+                Secure Admin Login
+
+            </div>
+
+
+            <div class="footer">
+
+                Smart Attendance System
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Login Result -->
+
+    {% if login_success %}
+
+    <script>
+
+        setTimeout(function () {
+
+            window.location.href = "{{ url_for('dashboard') }}";
+
+        }, 1200);
+
+    </script>
+
+    {% endif %}
+
+
+</body>
+</html>
+

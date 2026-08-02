@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Add Student - Smart Attendance</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #07111f, #0b1f3a, #102b52);
+        color: #ffffff;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    /* ================= BACKGROUND ANIMATION ================= */
+
+    body::before,
+    body::after {
+        content: "";
+        position: fixed;
+        width: 350px;
+        height: 350px;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.35;
+        z-index: -1;
+        animation: float 8s ease-in-out infinite alternate;
+    }
+
+    body::before {
+        background: #2563eb;
+        top: -120px;
+        left: -100px;
+    }
+
+    body::after {
+        background: #06b6d4;
+        right: -120px;
+        bottom: -120px;
+        animation-delay: 2s;
+    }
+
+    @keyframes float {
+        from {
+            transform: translate(0, 0);
+        }
+
+        to {
+            transform: translate(50px, 40px);
+        }
+    }
+
+    /* ================= NAVBAR ================= */
+
+    .navbar {
+        height: 75px;
+        padding: 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        background: rgba(7, 17, 31, 0.72);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+
+        font-size: 19px;
+        font-weight: bold;
+
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+    }
+
+    .brand h2 {
+        font-size: 20px;
+        letter-spacing: 0.3px;
+    }
+
+    .dashboard-link {
+        color: #dbeafe;
+        text-decoration: none;
+
+        padding: 10px 18px;
+        border-radius: 10px;
+
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.05);
+
+        transition: 0.3s ease;
+    }
+
+    .dashboard-link:hover {
+        background: rgba(37,99,235,0.25);
+        border-color: rgba(96,165,250,0.5);
+        transform: translateY(-2px);
+    }
+
+    /* ================= MAIN ================= */
+
+    .container {
+        width: 100%;
+        max-width: 650px;
+        margin: 55px auto;
+        padding: 0 20px;
+    }
+
+    .heading {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: fadeDown 0.7s ease;
+    }
+
+    .heading h1 {
+        font-size: 34px;
+        margin-bottom: 10px;
+    }
+
+    .heading p {
+        color: #9fb3c8;
+        font-size: 15px;
+    }
+
+    @keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ================= CARD ================= */
+
+    .card {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+
+        backdrop-filter: blur(20px);
+
+        padding: 35px;
+
+        border-radius: 22px;
+
+        box-shadow:
+            0 25px 70px rgba(0,0,0,0.35),
+            inset 0 1px 0 rgba(255,255,255,0.05);
+
+        animation: cardAppear 0.8s ease;
+    }
+
+    @keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(25px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* ================= FORM ================= */
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 9px;
+
+        color: #e2e8f0;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        color: #7dd3fc;
+
+        font-size: 17px;
+    }
+
+    input {
+        width: 100%;
+        height: 52px;
+
+        padding: 0 15px 0 45px;
+
+        border-radius: 12px;
+
+        border: 1px solid rgba(255,255,255,0.12);
+
+        background: rgba(0,0,0,0.20);
+
+        color: white;
+
+        font-size: 15px;
+
+        outline: none;
+
+        transition: 0.3s ease;
+    }
+
+    input::placeholder {
+        color: #718096;
+    }
+
+    input:focus {
+        border-color: #38bdf8;
+
+        background: rgba(0,0,0,0.28);
+
+        box-shadow:
+            0 0 0 3px rgba(56,189,248,0.12),
+            0 8px 25px rgba(0,0,0,0.15);
+
+        transform: translateY(-1px);
+    }
+
+    /* ================= BUTTON ================= */
+
+    button {
+        width: 100%;
+        height: 53px;
+
+        margin-top: 8px;
+
+        border: none;
+        border-radius: 12px;
+
+        background: linear-gradient(
+            135deg,
+            #2563eb,
+            #0891b2
+        );
+
+        color: white;
+
+        font-size: 16px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: 0.3s ease;
+
+        box-shadow:
+            0 10px 30px rgba(37,99,235,0.28);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 15px 35px rgba(37,99,235,0.38);
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ================= MESSAGE ================= */
+
+    .message {
+        margin-top: 20px;
+
+        padding: 13px 15px;
+
+        border-radius: 10px;
+
+        font-size: 14px;
+
+        display: none;
+
+        animation: messageAppear 0.3s ease;
+    }
+
+    @keyframes messageAppear {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success {
+        display: block;
+        background: rgba(34,197,94,0.12);
+        border: 1px solid rgba(34,197,94,0.3);
+        color: #86efac;
+    }
+
+    .error {
+        display: block;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #fca5a5;
+    }
+
+    /* ================= BACK LINK ================= */
+
+    .back {
+        display: block;
+
+        text-align: center;
+
+        margin-top: 22px;
+
+        color: #7dd3fc;
+
+        text-decoration: none;
+
+        font-size: 14px;
+
+        transition: 0.3s ease;
+    }
+
+    .back:hover {
+        color: white;
+        transform: translateX(-3px);
+    }
+
+    /* ================= INFO ================= */
+
+    .info {
+        margin-top: 25px;
+
+        padding: 14px;
+
+        border-radius: 10px;
+
+        background: rgba(255,255,255,0.04);
+
+        border: 1px solid rgba(255,255,255,0.06);
+
+        color: #94a3b8;
+
+        font-size: 13px;
+
+        line-height: 1.6;
+
+        text-align: center;
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 700px) {
+
+        .navbar {
+            height: 68px;
+            padding: 0 18px;
+        }
+
+        .brand h2 {
+            font-size: 17px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+        }
+
+        .dashboard-link {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .container {
+            margin: 35px auto;
+        }
+
+        .heading h1 {
+            font-size: 28px;
+        }
+
+        .card {
+            padding: 25px 20px;
+            border-radius: 18px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<div class="navbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            SA
+        </div>
+
+        <h2>Smart Attendance</h2>
+
+    </div>
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="dashboard-link"
+    >
+        Dashboard
+    </a>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="container">
+
+    <div class="heading">
+
+        <h1>Add New Student</h1>
+
+        <p>
+            Register a student before capturing their face data.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <form id="studentForm">
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Student Name
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        👤
+                    </span>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter student's full name"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLL -->
+
+            <div class="form-group">
+
+                <label for="roll">
+                    Roll Number
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        #
+                    </span>
+
+                    <input
+                        type="text"
+                        id="roll"
+                        name="roll"
+                        placeholder="Enter roll number"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+
+            <div class="form-group">
+
+                <label for="department">
+                    Department
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        🎓
+                    </span>
+
+                    <input
+                        type="text"
+                        id="department"
+                        name="department"
+                        placeholder="e.g. Computer Science"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                id="submitBtn"
+            >
+                Add Student
+            </button>
+
+        </form>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+        <div class="info">
+            After adding the student, you can capture
+            their face data from the Students section.
+        </div>
+
+
+        <a
+            href="{{ url_for('students') }}"
+            class="back"
+        >
+            ← Back to Students
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    const form =
+        document.getElementById("studentForm");
+
+    const submitBtn =
+        document.getElementById("submitBtn");
+
+    const message =
+        document.getElementById("message");
+
+
+    form.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            submitBtn.disabled = true;
+
+            submitBtn.textContent =
+                "Adding Student...";
+
+            message.className =
+                "message";
+
+            message.style.display =
+                "none";
+
+
+            const formData =
+                new FormData(form);
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{{ url_for('add_student_ajax') }}",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (data.success) {
+
+                    message.className =
+                        "message success";
+
+                    message.textContent =
+                        "✓ Student added successfully.";
+
+                    message.style.display =
+                        "block";
+
+                    form.reset();
+
+                    submitBtn.textContent =
+                        "Student Added ✓";
+
+
+                    setTimeout(
+                        function() {
+
+                            window.location.href =
+                                "{{ url_for('students') }}";
+
+                        },
+                        1200
+                    );
+
+                } else {
+
+                    throw new Error(
+                        data.message ||
+                        "Could not add student."
+                    );
+
+                }
+
+            } catch (error) {
+
+                message.className =
+                    "message error";
+
+                message.textContent =
+                    "✕ " + error.message;
+
+                message.style.display =
+                    "block";
+
+                submitBtn.disabled =
+                    false;
+
+                submitBtn.textContent =
+                    "Add Student";
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+</html>

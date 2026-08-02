@@ -1,0 +1,50 @@
+# =========================
+# Python Virtual Environment
+# =========================
+.venv/
+venv/
+env/
+
+# =========================
+# Python Cache
+# =========================
+__pycache__/
+*.py[cod]
+
+# =========================
+# Database
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Face Recognition Data
+# =========================
+dataset/
+trainer/
+
+# =========================
+# Generated Exports
+# =========================
+exports/
+attendance_export.csv
+
+# =========================
+# Temporary Files
+# =========================
+tempCodeRunnerFile.py
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+
+# =========================
+# IDE / OS Files
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Capture Face - Smart Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .student-info {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        #video-container {
+            margin: 20px auto;
+            max-width: 700px;
+        }
+
+        #video-feed {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-size: 16px;
+        }
+
+        #startBtn {
+            background: #007bff;
+            color: white;
+        }
+
+        #stopBtn {
+            background: #dc3545;
+            color: white;
+        }
+
+        #backBtn {
+            background: #6c757d;
+            color: white;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #progress {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Capture Face</h1>
+
+    <div class="student-info">
+        <strong>Student:</strong> {{ student["name"] }}<br>
+        <strong>Roll:</strong> {{ student["roll"] }}<br>
+        <strong>Department:</strong> {{ student["department"] }}
+    </div>
+
+    <div id="video-container">
+        <img id="video-feed" src="" alt="Camera feed">
+    </div>
+
+    <div>
+        <button id="startBtn" onclick="startCapture()">
+            Start Capture
+        </button>
+
+        <button id="stopBtn" onclick="stopCapture()" disabled>
+            Stop & Train
+        </button>
+
+        <button id="backBtn" onclick="window.location.href='/students'">
+            Back to Students
+        </button>
+    </div>
+
+    <div id="status">
+        Ready to capture.
+    </div>
+
+    <div id="progress">
+        Samples: 0 / 30
+    </div>
+
+</div>
+
+<script>
+
+let statusTimer = null;
+
+async function startCapture() {
+
+    try {
+
+        const response = await fetch(
+            "/start_capture/{{ student['id'] }}"
+        );
+
+        const data = await response.json();
+
+        if (data.status !== "success") {
+            document.getElementById("status").innerText =
+                data.message;
+
+            return;
+        }
+
+        document.getElementById("status").innerText =
+            "Capture started. Look at the camera.";
+
+        document.getElementById("video-feed").src =
+            "/capture_video_feed";
+
+        document.getElementById("startBtn").disabled = true;
+        document.getElementById("stopBtn").disabled = false;
+
+        statusTimer = setInterval(checkStatus, 500);
+
+    } catch (error) {
+
+        document.getElementById("status").innerText =
+            "Error starting capture.";
+
+        console.error(error);
+    }
+}
+
+
+async function checkStatus() {
+
+    try {
+
+        const response = await fetch("/capture_status");
+        const data = await response.json();
+
+        document.getElementById("progress").innerText =
+            "Samples: " +
+            data.count +
+            " / " +
+            data.max_samples;
+
+        document.getElementById("status").innerText =
+            data.message;
+
+        if (data.done) {
+
+            clearInterval(statusTimer);
+
+            document.getElementById("stopBtn").disabled = false;
+
+            document.getElementById("status").innerText =
+                "Face capture completed.";
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+
+async function stopCapture() {
+
+    document.getElementById("status").innerText =
+        "Stopping capture and starting training...";
+
+    try {
+
+        const response = await fetch(
+            "/stop_capture_and_train"
+        );
+
+        const data = await response.json();
+
+        document.getElementById("status").innerText =
+            data.message;
+
+        if (statusTimer) {
+            clearInterval(statusTimer);
+        }
+
+        document.getElementById("video-feed").src = "";
+
+        document.getElementById("startBtn").disabled = false;
+        document.getElementById("stopBtn").disabled = true;
+
+    } catch (error) {
+
+        document.getElementById("status").innerText =
+            "Error stopping capture.";
+
+        console.error(error);
+    }
+}
+
+</script>
+
+</body>
+</html>
