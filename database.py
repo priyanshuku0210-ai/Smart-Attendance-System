@@ -49,19 +49,19 @@ def init_db():
         )
     """)
 
-    # Make sure department exists in older databases
+    # Check whether department column exists
     columns = [
         row[1]
         for row in cur.execute("PRAGMA table_info(attendance)").fetchall()
     ]
 
     if "department" not in columns:
-        cur.execute("""
-            ALTER TABLE attendance
-            ADD COLUMN department TEXT NOT NULL DEFAULT ''
-        """)
+        cur.execute(
+            "ALTER TABLE attendance "
+            "ADD COLUMN department TEXT NOT NULL DEFAULT ''"
+        )
 
-    # Remove old attendance index if it exists
+    # Remove old attendance uniqueness constraint if it exists
     cur.execute("DROP INDEX IF EXISTS idx_attendance_unique")
 
     # Create default admin account
@@ -75,16 +75,18 @@ def init_db():
             "INSERT INTO admin (username, password) VALUES (?, ?)",
             ("admin", "admin123")
         )
-    demo = cur.execute(
-    "SELECT * FROM admin WHERE username = ?",
-    ("demo",)
-).fetchone()
 
-if not demo:
-    cur.execute(
-        "INSERT INTO admin (username, password) VALUES (?, ?)",
-        ("demo", "Demo@2026")
-    )
+    # Create demo account
+    demo = cur.execute(
+        "SELECT * FROM admin WHERE username = ?",
+        ("demo",)
+    ).fetchone()
+
+    if not demo:
+        cur.execute(
+            "INSERT INTO admin (username, password) VALUES (?, ?)",
+            ("demo", "Demo@2026")
+        )
 
     conn.commit()
     conn.close()
