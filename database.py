@@ -75,7 +75,7 @@ def init_db():
             "INSERT INTO admin (username, password) VALUES (?, ?)",
             ("admin", "admin123")
         )
-       demo = cur.execute(
+    demo = cur.execute(
     "SELECT * FROM admin WHERE username = ?",
     ("demo",)
 ).fetchone()
