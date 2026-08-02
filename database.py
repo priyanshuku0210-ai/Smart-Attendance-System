@@ -15,6 +15,7 @@ def init_db():
     conn = get_connection()
     cur = conn.cursor()
 
+    # Admin table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS admin (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +24,7 @@ def init_db():
         )
     """)
 
+    # Students table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS students (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +34,7 @@ def init_db():
         )
     """)
 
+    # Attendance table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS attendance (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,13 +49,27 @@ def init_db():
         )
     """)
 
-    columns = [row[1] for row in cur.execute("PRAGMA table_info(attendance)").fetchall()]
-    if "department" not in columns:
-        cur.execute("ALTER TABLE attendance ADD COLUMN department TEXT NOT NULL DEFAULT ''")
+    # Make sure department exists in older databases
+    columns = [
+        row[1]
+        for row in cur.execute("PRAGMA table_info(attendance)").fetchall()
+    ]
 
+    if "department" not in columns:
+        cur.execute("""
+            ALTER TABLE attendance
+            ADD COLUMN department TEXT NOT NULL DEFAULT ''
+        """)
+
+    # Remove old attendance index if it exists
     cur.execute("DROP INDEX IF EXISTS idx_attendance_unique")
 
-    admin = cur.execute("SELECT * FROM admin WHERE username = ?", ("admin",)).fetchone()
+    # Create default admin account
+    admin = cur.execute(
+        "SELECT * FROM admin WHERE username = ?",
+        ("admin",)
+    ).fetchone()
+
     if not admin:
         cur.execute(
             "INSERT INTO admin (username, password) VALUES (?, ?)",
